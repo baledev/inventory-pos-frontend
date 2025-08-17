@@ -60,9 +60,9 @@ const columns: ColumnDef<z.infer<typeof ProductSchema>>[] = [
   },
   {
     accessorKey: "sku",
-    header: "SKU",
+    header: () => <div className="text-center">SKU</div>,
     cell: ({ row }) => (
-      <div className="w-32">
+      <div className="text-center">
         <Badge variant="outline" className="text-muted-foreground px-1.5">
           {row.original.sku}
         </Badge>
@@ -81,30 +81,33 @@ const columns: ColumnDef<z.infer<typeof ProductSchema>>[] = [
   },
   {
     accessorKey: "stock",
-    header: "Stock",
+    header: () => <div className="text-center">Stock</div>,
+    cell: ({row}) => <div className="text-center">{row.original.stock}</div>,
   },
   {
     id: "actions",
     cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
-            size="icon"
-          >
-            <EllipsisVerticalIcon />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem>Edit</DropdownMenuItem>
-          <DropdownMenuItem>Make a copy</DropdownMenuItem>
-          <DropdownMenuItem>Favorite</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex justify-end pr-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="data-[state=open]:bg-muted text-muted-foreground flex size-8"
+              size="icon"
+            >
+              <EllipsisVerticalIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+            <DropdownMenuItem>Favorite</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     ),
   },
 ]
