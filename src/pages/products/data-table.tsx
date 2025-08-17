@@ -24,22 +24,9 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, EllipsisVerticalIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { ProductSchema } from "@/services/product-service";
 
-const productSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  sku: z.string(),
-  cost: z.number(),
-  price: z.number(),
-  stock: z.number(),
-});
-
-const columns: ColumnDef<z.infer<typeof productSchema>>[] = [
-//   {
-//     id: "drag",
-//     header: () => null,
-//     cell: ({ row }) => <DragHandle id={row.original.id} />,
-//   },
+const columns: ColumnDef<z.infer<typeof ProductSchema>>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -69,9 +56,6 @@ const columns: ColumnDef<z.infer<typeof productSchema>>[] = [
   {
     accessorKey: "name",
     header: "Nama Produk",
-    // cell: ({ row }) => {
-    //   return <TableCellViewer item={row.original} />
-    // },
     enableHiding: false,
   },
   {
@@ -85,20 +69,6 @@ const columns: ColumnDef<z.infer<typeof productSchema>>[] = [
       </div>
     ),
   },
-//   {
-//     accessorKey: "status",
-//     header: "Status",
-//     cell: ({ row }) => (
-//       <Badge variant="outline" className="text-muted-foreground px-1.5">
-//         {row.original.status === "Done" ? (
-//           <IconCircleCheckFilled className="fill-green-500 dark:fill-green-400" />
-//         ) : (
-//           <IconLoader />
-//         )}
-//         {row.original.status}
-//       </Badge>
-//     ),
-//   },
   {
     accessorKey: "cost",
     header: () => <div className="w-full text-right">Cost</div>,
@@ -142,7 +112,7 @@ const columns: ColumnDef<z.infer<typeof productSchema>>[] = [
 export function DataTable({
   data: initialData,
 }: {
-  data: z.infer<typeof productSchema>[]
+  data: z.infer<typeof ProductSchema>[]
 }) {
     const [data, setData] = React.useState(() => initialData)
     const [rowSelection, setRowSelection] = React.useState({})
@@ -165,7 +135,7 @@ export function DataTable({
             columnFilters,
             pagination,
         },
-        getRowId: row => row.id.toString(),
+        getRowId: row => row.id!.toString(),
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onColumnVisibilityChange: setColumnVisibility,

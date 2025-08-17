@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AuthenticatedLayout } from '@/components/authenticated-layout';
 import { DataTable } from './data-table';
-import type { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { ProductForm } from './product-form';
@@ -13,17 +12,15 @@ import {
   deleteProduct,
   type Product
 } from '@/services/product-service';
-import { Loader2, PlusCircle, Pencil, Trash2 } from 'lucide-react';
+import { Loader2, PlusCircle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
 
 export default function ProductManagementPage() {
-    const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-
-  // Form logic moved to ProductForm
 
   useEffect(() => {
     if(isAuthenticated) {
@@ -103,50 +100,9 @@ export default function ProductManagementPage() {
     </>
   );
 
-  const columns: ColumnDef<Product>[] = [
-    {
-      accessorKey: 'name',
-      header: 'Nama Produk',
-      cell: info => info.getValue(),
-    },
-    {
-      accessorKey: 'sku',
-      header: 'SKU',
-      cell: info => info.getValue(),
-    },
-    {
-      accessorKey: 'cost',
-      header: 'Harga Beli',
-      cell: info => `Rp ${Number(info.getValue()).toLocaleString('id-ID')}`,
-    },
-    {
-      accessorKey: 'price',
-      header: 'Harga Jual',
-      cell: info => `Rp ${Number(info.getValue()).toLocaleString('id-ID')}`,
-    },
-    {
-      accessorKey: 'stock',
-      header: 'Stok',
-      cell: info => info.getValue(),
-    },
-  ];
-
   return (
     <AuthenticatedLayout header={header}>
-      <DataTable
-        columns={columns}
-        data={products}
-        // actions={product => (
-        //   <>
-        //     <Button variant="outline" size="sm" onClick={() => openDialog(product)}>
-        //       <Pencil className="h-4 w-4" />
-        //     </Button>
-        //     <Button variant="outline" size="sm" onClick={() => onDelete(product.id!)}>
-        //       <Trash2 className="h-4 w-4" />
-        //     </Button>
-        //   </>
-        // )}
-      />
+      <DataTable data={products} />
 
       {/* Dialog untuk Tambah/Edit Produk */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
