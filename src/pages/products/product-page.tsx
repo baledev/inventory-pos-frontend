@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AuthenticatedLayout } from '@/components/authenticated-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -93,22 +94,24 @@ export default function ProductManagementPage() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-full">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <span className="ml-2">Memuat data produk...</span>
       </div>
     );
   }
 
-  return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Manajemen Produk</h1>
-        <Button onClick={() => openDialog()}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Tambah Produk
-        </Button>
-      </div>
+  const header = (
+    <div className="flex justify-between items-center">
+      <h1 className="text-3xl font-bold">Manajemen Produk</h1>
+      <Button onClick={() => openDialog()}>
+        <PlusCircle className="mr-2 h-4 w-4" /> Tambah Produk
+      </Button>
+    </div>
+  );
 
+  return (
+    <AuthenticatedLayout header={header}>
       <Card>
         <CardContent className="p-0">
           <Table>
@@ -210,6 +213,6 @@ export default function ProductManagementPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </AuthenticatedLayout>
   );
 }
