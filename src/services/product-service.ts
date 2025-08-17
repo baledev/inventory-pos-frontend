@@ -52,3 +52,51 @@ export const updateProduct = async (id: number, product: Product): Promise<Produ
 export const deleteProduct = async (id: number): Promise<void> => {
   await axios.delete(`${API_BASE_URL}/${id}`);
 };
+
+type PaginatedProductResponse = {
+  content: Product[];
+  totalElements: number;
+  totalPages: number;
+  number: number; // page number (mulai dari 0)
+  size: number;   // page size
+  // ...field lain dari response bisa diabaikan jika tidak dipakai
+};
+
+type GetProductsPaginatedParams = {
+  page: number; // mulai dari 1 (frontend), backend biasanya mulai dari 0
+  size: number;
+  sort?: string;
+  order?: "asc" | "desc";
+  filters?: any; // bisa diubah sesuai kebutuhan filter
+};
+
+export const getProductsPaginated = async ({
+  page,
+  size,
+  sort,
+  order,
+  filters,
+}: GetProductsPaginatedParams): Promise<{ data: Product[]; total: number; totalPages: number; }> => {
+  // Backend biasanya page mulai dari 0
+  const params: Record<string, any> = {
+    page: page - 1,
+    size,
+  };
+  if (sort) {
+    params.sort = `${sort},${order ?? "asc"}`;
+  }
+  // Implementasi filter jika backend mendukung, misal: params.name = filters?.find(f => f.id === "name")?.value
+  // Silakan sesuaikan dengan API backend Anda
+
+  const response = await axios.get<PaginatedProductResponse>(API_BASE_URL + "/search", { params });
+  const arrSchema = z.array(ProductSchema);
+  const result = arrSchema.safeParse(response.data.content);
+  if (!result.success) {
+    throw new Error("Produk tidak valid: " + JSON.stringify(result.error));
+  }
+  return {
+    data: result.data,
+    total: response.data.totalElements,
+    totalPages: response.data.totalPages,
+  };
+};

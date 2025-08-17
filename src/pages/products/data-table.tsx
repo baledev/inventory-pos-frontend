@@ -10,7 +10,6 @@ import {
   type SortingState,
   getSortedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   type VisibilityState,
   type ColumnFiltersState,
   getFacetedRowModel,
@@ -24,7 +23,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, EllipsisVerticalIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { ProductSchema } from "@/services/product-service";
+import { getProductsPaginated, type ProductSchema } from "@/services/product-service";
+import { useNavigate, useSearchParams } from "react-router";
 
 const columns: ColumnDef<z.infer<typeof ProductSchema>>[] = [
   {
@@ -110,11 +110,17 @@ const columns: ColumnDef<z.infer<typeof ProductSchema>>[] = [
 ]
 
 export function DataTable({
-  data: initialData,
+  initialPageSize = 10,
 }: {
-  data: z.infer<typeof ProductSchema>[]
+  initialPageSize?: number;
 }) {
-    const [data, setData] = React.useState(() => initialData)
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const initialPageIndex = Number(searchParams.get("page") ?? 1) - 0;
+    const initialPageSizeFromUrl = Number(searchParams.get("size") ?? initialPageSize);
+
+    const [data, setData] = React.useState<z.infer<typeof ProductSchema>[]>([])
     const [rowSelection, setRowSelection] = React.useState({})
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -122,8 +128,34 @@ export function DataTable({
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [pagination, setPagination] = React.useState({
         pageIndex: 0,
-        pageSize: 10,
+        pageSize: initialPageSize,
     })
+    const [totalRows, setTotalRows] = React.useState(0);
+    const [totalPages, setTotalPages] = React.useState(1);
+
+    React.useEffect(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", (pagination.pageIndex + 1).toString());
+      params.set("size", pagination.pageSize.toString());
+      navigate(`?${params.toString()}`, { replace: true });
+    }, [pagination.pageIndex, pagination.pageSize]);
+
+    // Fetch data dari server setiap pagination berubah
+    React.useEffect(() => {
+      async function fetchData() {
+        const res = await getProductsPaginated({
+          page: pagination.pageIndex + 1,
+          size: pagination.pageSize,
+          sort: sorting.length ? sorting[0].id : undefined,
+          order: sorting.length ? (sorting[0].desc ? "desc" : "asc") : undefined,
+          filters: columnFilters,
+        });
+        setData(res.data);
+        setTotalRows(res.total);
+        setTotalPages(res.totalPages ?? Math.ceil(res.total / pagination.pageSize));
+      }
+      fetchData();
+    }, [pagination, sorting, columnFilters]);
 
     const table = useReactTable({
         data,
@@ -145,9 +177,12 @@ export function DataTable({
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
+        manualPagination: true,
+        manualSorting: true,
+        manualFiltering: true,
+        pageCount: totalPages,
     });
 
   return (

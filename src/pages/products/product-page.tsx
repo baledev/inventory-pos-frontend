@@ -102,7 +102,7 @@ export default function ProductManagementPage() {
 
   return (
     <AuthenticatedLayout header={header}>
-      <DataTable data={products} />
+      <DataTable />
 
       {/* Dialog untuk Tambah/Edit Produk */}
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
