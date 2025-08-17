@@ -2,13 +2,15 @@ import type { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { Loader2Icon } from "lucide-react";
 
 interface AuthenticatedLayoutProps {
   children: ReactNode;
   header?: ReactNode;
+  loadingState?: boolean;
 }
 
-export function AuthenticatedLayout({ children, header }: AuthenticatedLayoutProps) {
+export function AuthenticatedLayout({ children, header, loadingState = true }: AuthenticatedLayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -23,7 +25,14 @@ export function AuthenticatedLayout({ children, header }: AuthenticatedLayoutPro
           </header>
         )}
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {children}
+          {loadingState ? (
+            <div className="flex justify-center items-center h-full">
+              <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
+              <span className="ml-2">Memuat data...</span>
+            </div>
+          ) : (
+            children
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

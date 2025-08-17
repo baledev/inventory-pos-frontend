@@ -12,8 +12,8 @@ import {
   deleteProduct,
   type Product
 } from '@/services/product-service';
-import { Loader2, PlusCircle } from 'lucide-react';
 import { useAuth } from '@/context/auth-context';
+import { PlusCircleIcon } from 'lucide-react';
 
 export default function ProductManagementPage() {
   const { isAuthenticated } = useAuth();
@@ -80,28 +80,19 @@ export default function ProductManagementPage() {
     setIsFormOpen(true);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Memuat data produk...</span>
-      </div>
-    );
-  }
-
   const header = (
     <>
       <h1 className="text-base font-medium">Manajemen Produk</h1>
       <div className="ml-auto flex items-center gap-2">
         <Button size="sm" onClick={() => openDialog()}>
-          <PlusCircle className="h-4 w-4" /> Tambah Produk
+          <PlusCircleIcon className="h-4 w-4" /> Tambah Produk
         </Button>
       </div>
     </>
   );
 
   return (
-    <AuthenticatedLayout header={header}>
+    <AuthenticatedLayout header={header} loadingState={isLoading}>
       <DataTable />
 
       {/* Dialog untuk Tambah/Edit Produk */}

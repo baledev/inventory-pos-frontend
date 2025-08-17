@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getInventoryReport, getSalesReport } from "@/services/report-service";
-import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AuthenticatedLayout } from "@/components/authenticated-layout";
@@ -52,15 +51,6 @@ export default function Page() {
     fetchData();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2Icon className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2">Memuat data...</span>
-      </div>
-    );
-  }
-
   const header = (
     <Breadcrumb>
       <BreadcrumbList>
@@ -78,7 +68,7 @@ export default function Page() {
   );
 
   return (
-    <AuthenticatedLayout header={header}>
+    <AuthenticatedLayout header={header} loadingState={isLoading}>
       {/* Laporan Penjualan */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="shadow-lg">

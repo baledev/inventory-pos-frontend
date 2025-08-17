@@ -7,6 +7,7 @@ import {
   Frame,
   GalleryVerticalEnd,
   Map,
+  MonitorIcon,
   PieChart,
   Settings2,
   SquareTerminal,
@@ -23,6 +24,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useLocation } from "react-router"
 
 // This is sample data.
 const data = {
@@ -49,6 +51,18 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: MonitorIcon,
+      isActive: false,
+    },
+    {
+      title: "Inventory",
+      url: "/products",
+      icon: GalleryVerticalEnd,
+      isActive: true,
+    },
     {
       title: "Playground",
       url: "#",
@@ -155,13 +169,25 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const navMain = data.navMain.map((item) => ({
+    ...item,
+    isActive: item.url === currentPath,
+    items: item.items?.map((subItem) => ({
+      ...subItem,
+      isActive: subItem.url === currentPath,
+    })),
+  }));
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
